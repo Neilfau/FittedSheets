@@ -471,7 +471,6 @@ public class SheetViewController: UIViewController {
                     self.isPanning = false
                     if previousSize != newSize {
                         self.sizeChanged?(self, newSize, newContentHeight)
-                        self.didPanSheet?(self, newHeight, gesture.state)
                     }
                 })
             case .possible:
