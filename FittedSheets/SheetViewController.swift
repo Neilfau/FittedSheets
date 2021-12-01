@@ -136,7 +136,7 @@ public class SheetViewController: UIViewController {
     public var shouldDismiss: ((SheetViewController) -> Bool)?
     public var didDismiss: ((SheetViewController) -> Void)?
     public var sizeChanged: ((SheetViewController, SheetSize, CGFloat) -> Void)?
-    public var didPanSheet: ((SheetViewController, CGPoint, UIPanGestureRecognizer.State) -> Void)?
+    public var didPanSheet: ((SheetViewController, CGPoint, CGFloat, UIPanGestureRecognizer.State) -> Void)?
     
     public private(set) var contentViewController: SheetContentViewController
     var overlayView = UIView()
@@ -378,7 +378,7 @@ public class SheetViewController: UIViewController {
             newHeight = maxHeight
         }
         
-        didPanSheet?(self, point, gesture.state)
+        didPanSheet?(self, point, offset, gesture.state)
         
         switch gesture.state {
             case .cancelled, .failed:
