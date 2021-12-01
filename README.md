@@ -1,6 +1,8 @@
 # FittedSheets
 Bottom sheets for iOS
 
+![Bitrise Status](https://app.bitrise.io/app/13f283bd401bbe1c.svg?token=MGSP3TGNYPSgB5gWq4MEQg)
+
 Minimum requirement:  
 ![iOSVersion](https://img.shields.io/badge/iOS-11-green.svg) 
 ![SwiftVersion](https://img.shields.io/badge/Swift-5-green.svg) 
@@ -9,11 +11,11 @@ Minimum requirement:
 ## About
 This project is to enable easily presenting view controllers in a bottom sheet that supports scrollviews and multiple sizes. Contributions and feedback are very welcome.  
 
-The bottom sheet tries to be smart about the height it takes. If the view controller is smaller than the sizes specified, it will only grow as large as the intrensic height of the presented view controller. If it is larger, it will stop at each height specified in the initializer or setSizes function.
+The bottom sheet tries to be smart about the height it takes. If the view controller is smaller than the sizes specified, it will only grow as large as the intrinsic height of the presented view controller. If it is larger, it will stop at each height specified in the initializer or setSizes function.
 
-| Intrensic Heights | Fullscreen Modal | True Fullscreen | Scrolling | Inline |
+| Intrinsic Heights | Fullscreen Modal | True Fullscreen | Scrolling | Inline |
 |:-:|:-:|:-:|:-:|:-:|
-| ![Intrensid Heights](./Screens/IntrensicHeight.gif) | ![Fullscreen Modal](./Screens/FullscreenHeight.gif) | ![True Fullscreen](./Screens/TrueFullscreenHeight.gif) | ![Scrolling](./Screens/Scrolling.gif) | ![Inline](./Screens/Inline.gif) | 
+| ![Intrinsic Heights](./Screens/IntrinsicHeight.gif) | ![Fullscreen Modal](./Screens/FullscreenHeight.gif) | ![True Fullscreen](./Screens/TrueFullscreenHeight.gif) | ![Scrolling](./Screens/Scrolling.gif) | ![Inline](./Screens/Inline.gif) |
 
 ## Usage
 
@@ -48,8 +50,8 @@ let options = SheetOptions(
     // Extends the background behind the pull bar or not
     shouldExtendBackground: true,
     
-    // Attempts to use intrensic heights on navigation controllers. This does not work well in combination with keyboards without your code handling it.
-    setIntrensicHeightOnNavigationControllers: true, 
+    // Attempts to use intrinsic heights on navigation controllers. This does not work well in combination with keyboards without your code handling it.
+    setIntrinsicHeightOnNavigationControllers: true, 
     
     // Pulls the view controller behind the safe area top, especially useful when embedding navigation controllers
     useFullScreenMode: true,
@@ -58,12 +60,18 @@ let options = SheetOptions(
     shrinkPresentingViewController: true,
     
     // Determines if using inline mode or not
-    useInlineMode: false
+    useInlineMode: false,
+    
+    // Adds a padding on the left and right of the sheet with this amount. Defaults to zero (no padding)
+    horizontalPadding: 0,
+    
+    // Sets the maximum width allowed for the sheet. This defaults to nil and doesn't limit the width.
+    maxWidth: nil
 )
 
 let sheetController = SheetViewController(
     controller: controller, 
-    sizes: [.intrensic, .percent(0.25), .fixed(200), .fullScreen])
+    sizes: [.intrinsic, .percent(0.25), .fixed(200), .fullScreen])
     
     
 // The size of the grip in the pull bar
@@ -93,8 +101,8 @@ sheetController.dismissOnPull = false
 /// Allow pulling past the maximum height and bounce back. Defaults to true.
 sheetController.allowPullingPastMaxHeight = false
 
-/// Automatically grow/move the sheet to accomidate the keyboard. Defaults to false.
-sheetController.autoAdjustToKeyboard = false
+/// Automatically grow/move the sheet to accomidate the keyboard. Defaults to true.
+sheetController.autoAdjustToKeyboard = true
 
 // Color of the sheet anywhere the child view controller may not show (or is transparent), such as behind the keyboard currently
 sheetController.contentBackgroundColor
@@ -108,7 +116,7 @@ self.present(sheetController, animated: false, completion: nil)
 **Handling dismiss events**
 ```swift
 let sheet = SheetViewController(controller: controller, sizes: [.fixed(420), .fullScreen])
-sheet.willDismiss = { _ in
+sheet.shouldDismiss = { _ in
 // This is called just before the sheet is dismissed. Return false to prevent the build in dismiss events
     return true
 }
@@ -131,26 +139,10 @@ let options = SheetOptions(
 )
 
 let sheetController = SheetViewController(controller: controller, sizes: [.percent(0.3), .fullscreen], options: options)
-
-// Add child
-sheetController.willMove(toParent: self)
-self.addChild(sheetController)
-self.view.addSubview(sheetController.view)
-sheetController.didMove(toParent: self)
-
-NSLayoutConstraint.activate([
-    sheet.view.topAnchor.constraint(equalTo: self.view.topAnchor),
-    sheet.view.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-    sheet.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-    sheet.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
-])
-
-Constraints(for: sheet.view) {
-    $0.edges(.top, .left, .bottom, .right).pinToSuperview()
-}
+sheetController.allowGestureThroughOverlay = true
 
 // animate in
-sheet.animateIn()
+sheetController.animateIn(to: view, in: self)
 ```
 
 ## Scrolling
