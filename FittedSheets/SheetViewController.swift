@@ -378,7 +378,7 @@ public class SheetViewController: UIViewController {
             newHeight = maxHeight
         }
         
-       
+        didPanSheet?(self, point, newHeight, gesture.state)
         
         switch gesture.state {
             case .cancelled, .failed:
@@ -396,8 +396,6 @@ public class SheetViewController: UIViewController {
                 
                 if offset > 0 {
                     let percent = max(0, min(1, offset / max(1, newHeight)))
-                    
-                    didPanSheet?(self, point, percent, gesture.state)
                     self.transition.setPresentor(percentComplete: percent)
                     self.overlayView.alpha = 1 - percent
                     self.contentViewController.view.transform = CGAffineTransform(translationX: 0, y: offset)
